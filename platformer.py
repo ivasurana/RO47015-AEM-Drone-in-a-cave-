@@ -142,7 +142,7 @@ while True: # game loop
             pygame.quit() # stop pygame
             sys.exit() # stop script
         if event.type == KEYDOWN:
-            if event.key==K_w:   ## Press w to fade the music put
+            if event.key==K_w:   ## Press w to fade the music out
                 pygame.mixer.music.fadeout(1000)
             if event.key == K_RIGHT:
                 moving_right = True
