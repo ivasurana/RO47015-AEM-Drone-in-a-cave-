@@ -14,6 +14,9 @@ user_input=input("What's your name?:")
 filepath_time = directory_time + user_input
 
 
+# directory_collision="/home/isurana/Desktop/Robotics/Quarter-4/AEM/My_version/v1/Data_Collision/"
+# user_input=input("What's your name?:")
+# filepath_collision = directory_collision + user_input
 
 
 def load_map(path):
