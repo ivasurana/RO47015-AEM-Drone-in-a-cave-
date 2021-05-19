@@ -1,8 +1,8 @@
-#force feedback controller
+# force feedback controller
 
 python should send the force and angle to the C program. send it as 1 number. e.g. 99180 is force 99 and 180 degrees.
 
-##in the python file:
+## in the python file:
 ```python
    import zmq
 ```
@@ -20,7 +20,7 @@ send reply: (send force/angle) number = 99180 means force 99 (maximum) and angle
 ```python
 socket.send(bytes(str(number), 'utf8')) 
 ```
-##The C-file
+## The C-file
 compile C-file:
 ```
 gcc -Wall -g force_joystick.c -lzmq -o force_joystick
@@ -30,6 +30,6 @@ gcc -Wall -g force_joystick.c -lzmq -o force_joystick
 ./force_joystick /dev/input/by-id/usb-*event-joystick
 ```
 
-##procedure
+## Procedure
 first start the C program. It waits for the python file to start. for smooth control send high frequency commands. (10hz+)
 

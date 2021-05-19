@@ -1,7 +1,7 @@
 import pygame, sys,os,random,csv # import pygame and sys
 import numpy as np
 import pathlib
-
+from pathlib import *
 clock = pygame.time.Clock() # set up the clock
 
 from pygame.locals import * # import pygame modules
@@ -9,9 +9,9 @@ from pygame.locals import * # import pygame modules
 ##Gamevariables
 run=True
 
-directory_time = "/home/isurana/Desktop/Robotics/Quarter-4/AEM/My_version/v1/Data_Time/"
+directory_time = Path.cwd() /'Data_Time'
 user_input=input("What's your name?:")
-filepath_time = directory_time + user_input
+filepath_time = directory_time / user_input
 
 
 # directory_collision="/home/isurana/Desktop/Robotics/Quarter-4/AEM/My_version/v1/Data_Collision/"
