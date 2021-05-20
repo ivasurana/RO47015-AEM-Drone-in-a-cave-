@@ -7,6 +7,6 @@ Created on Sun May 16 07:48:33 2021
 """
 
 import numpy as np
-data = np.load('Bla.npy')
+data = np.load('emilio.npy')
 
 print(data[-1])
