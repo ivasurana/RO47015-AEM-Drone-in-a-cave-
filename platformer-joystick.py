@@ -9,12 +9,16 @@ import time
 import zmq
 
 
+
+
+
 ##Gamevariables
 run=True
 
 directory_time = Path.cwd() /'Data_Time'
 user_input=input("What's your name?:")
 filepath_time = directory_time / user_input
+
 
 # directory_collision="/home/isurana/Desktop/Robotics/Quarter-4/AEM/My_version/v1/Data_Collision/"
 # user_input=input("What's your name?:")
@@ -36,6 +40,8 @@ game_map=load_map('map')
 
 ## Check for collision
 
+
+
 def collision_test(rect, tiles):
     hit_list = []
 
@@ -43,7 +49,7 @@ def collision_test(rect, tiles):
         if rect.colliderect(tile):
             hit_list.append(tile)
     
-            print("collision list",hit_list)
+            # print(hit_list)
     return hit_list
 
 
@@ -130,9 +136,6 @@ air_timer = 0
 true_scroll=[0,0]
 scroll=[0,0]
 player_rect = pygame.Rect(50, 250, player_image.get_width(), player_image.get_height())
-
-# print("player position", player_image.rect)
-
 test_rect = pygame.Rect(100,100,100,50)
 collision_sound_timer=0
 score=0
@@ -204,21 +207,13 @@ while run: # game loop
 
     player_rect, collisions = move(player_rect, player_movement, tile_rects)
 
-    # print("Player rect",player_rect)
 
-    ## Bouncing in the opposite direction
-
+    
     if collisions['bottom']:
-        player_y_momentum=-0.5
-        
-    elif collisions['top']:
-        player_y_momentum=1
-        
-    # if collisions['bottom']:
-    #     player_y_momentum = 0
-    #     air_timer = 0
-    # else:
-    #     air_timer += 1
+        player_y_momentum = 0
+        air_timer = 0
+    else:
+        air_timer += 1
         
         
     # print(hit_list)
