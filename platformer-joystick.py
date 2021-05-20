@@ -55,7 +55,7 @@ def collision_test(rect, tiles):
         if rect.colliderect(tile):
             hit_list.append(tile)
     
-            # print(hit_list)
+            print(hit_list)
     return hit_list
 
 
@@ -203,7 +203,8 @@ while run: # game loop
 
 
     player_rect, collisions = move(player_rect, player_movement, tile_rects)
-
+    #print(player_rect)
+    print(collisions)
 
     
     if collisions['bottom']:
@@ -224,8 +225,6 @@ while run: # game loop
     ## Joystick
     x_joystick = joystick.get_axis(0)
     y_joystick=joystick.get_axis(1)
-    print(x_joystick)
-    print(y_joystick)
     
     display.blit(player_image, (player_rect.x-scroll[0], player_rect.y-scroll[1]))
 
