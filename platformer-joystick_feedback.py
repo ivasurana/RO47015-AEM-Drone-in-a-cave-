@@ -8,10 +8,6 @@ from pygame.locals import * # import pygame modules
 import time
 import zmq
 
-pygame.joystick.init()
-
-
-
 
 ##Gamevariables
 run=True
@@ -19,7 +15,6 @@ run=True
 directory_time = Path.cwd() /'Data_Time'
 user_input=input("What's your name?:")
 filepath_time = directory_time / user_input
-
 
 # directory_collision="/home/isurana/Desktop/Robotics/Quarter-4/AEM/My_version/v1/Data_Collision/"
 # user_input=input("What's your name?:")
@@ -41,8 +36,6 @@ game_map=load_map('map')
 
 ## Check for collision
 
-
-
 def collision_test(rect, tiles):
     hit_list = []
 
@@ -50,7 +43,7 @@ def collision_test(rect, tiles):
         if rect.colliderect(tile):
             hit_list.append(tile)
     
-            # print(hit_list)
+            print("collision list",hit_list)
     return hit_list
 
 
@@ -137,14 +130,23 @@ air_timer = 0
 true_scroll=[0,0]
 scroll=[0,0]
 player_rect = pygame.Rect(50, 250, player_image.get_width(), player_image.get_height())
+
+# print("player position", player_image.rect)
+
 test_rect = pygame.Rect(100,100,100,50)
 collision_sound_timer=0
 score=0
 high_score=0
 game_active=True
 
-x_joystick=0
-y_joystick=0
+
+# def game_end(rect,tile):
+#     for layer in game_map:
+    
+#         for tile in layer:
+#             if tile == '6':
+#                 if rect.colliderect(tile):
+#                     print("HItting stff")
 
 
 while run: # game loop
@@ -189,10 +191,10 @@ while run: # game loop
     
     player_movement = [0, 0]
     if moving_right:
-        player_movement[0] += x_joystick
+        player_movement[0] += 2
     if moving_left:
-        player_movement[0] += x_joystick
-    player_movement[1] += y_joystick
+        player_movement[0] -= 2
+    player_movement[1] += player_y_momentum
     player_y_momentum += 0
     # if player_y_momentum > 3:
         # player_y_momentum = 3
@@ -202,28 +204,38 @@ while run: # game loop
 
     player_rect, collisions = move(player_rect, player_movement, tile_rects)
 
+    # print("Player rect",player_rect)
 
-    
+    ## Bouncing in the opposite direction
+
+        
     if collisions['bottom']:
-        player_y_momentum = 0
-        air_timer = 0
+        counter=0
+        player_y_momentum=-0.5
+        num=99270
+        socket.send(bytes(str(num), 'utf8'))
+    
+       
+            
+    elif collisions['top']:
+        counter=0
+        player_y_momentum=1
+        num=99090
+        socket.send(bytes(str(num), 'utf8'))
+        
     else:
-        air_timer += 1
+        counter+=1
+        if counter>40:
+            num=00000
+            socket.send(bytes(str(num), 'utf8'))
         
-        
-    # print(hit_list)
+
         
     if game_active:
         score+=0.024
         score_display('main_game')
 
-    
-
-    ## Joystick
-    x_joystick = joystick.get_axis(0)
-    y_joystick=joystick.get_axis(1)
-    
-    
+        
     display.blit(player_image, (player_rect.x-scroll[0], player_rect.y-scroll[1]))
 
     for event in pygame.event.get(): # event loop
@@ -233,9 +245,30 @@ while run: # game loop
         if event.type == KEYDOWN:
             if event.key==K_w:   ## Press w to fade the music put
                 pygame.mixer.music.fadeout(1000)
+            if event.key == K_RIGHT:
+                moving_right = True
+            if event.key == K_LEFT:
+                moving_left = True
+            if event.key == K_UP:
+                player_y_momentum =-1
+            if event.key==K_DOWN:
+                player_y_momentum=+1
             if event.key==K_ESCAPE:
                 run=False
                 
+        if event.type == KEYUP:
+            if event.key == K_RIGHT:
+                moving_right = False
+            if event.key == K_LEFT:
+                moving_left = False
+            if event.key==K_UP:
+                    player_y_momentum += 0.2
+                    if player_y_momentum > 3:
+                        player_y_momentum = 3
+            if event.key==K_DOWN:
+                    player_y_momentum += 0.2
+                    if player_y_momentum > 3:
+                        player_y_momentum = 3
             
           
             
