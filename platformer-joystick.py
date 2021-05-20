@@ -10,7 +10,12 @@ import zmq
 
 pygame.joystick.init()
 
+joystick_count = pygame.joystick.get_count()
+for i in range(joystick_count):
+    joystick = pygame.joystick.Joystick(i)
+    joystick.init()
 
+name = joystick.get_name()
 
 
 ##Gamevariables
@@ -50,7 +55,7 @@ def collision_test(rect, tiles):
         if rect.colliderect(tile):
             hit_list.append(tile)
     
-            # print(hit_list)
+            print(hit_list)
     return hit_list
 
 
@@ -188,11 +193,8 @@ while run: # game loop
     np.save(pathlib.Path(filepath_time),time_list) # save
     
     player_movement = [0, 0]
-    if moving_right:
-        player_movement[0] += x_joystick
-    if moving_left:
-        player_movement[0] += x_joystick
-    player_movement[1] += y_joystick
+    player_movement[0] += x_joystick*10
+    player_movement[1] += y_joystick*10
     player_y_momentum += 0
     # if player_y_momentum > 3:
         # player_y_momentum = 3
@@ -201,7 +203,8 @@ while run: # game loop
 
 
     player_rect, collisions = move(player_rect, player_movement, tile_rects)
-
+    #print(player_rect)
+    print(collisions)
 
     
     if collisions['bottom']:
@@ -222,7 +225,6 @@ while run: # game loop
     ## Joystick
     x_joystick = joystick.get_axis(0)
     y_joystick=joystick.get_axis(1)
-    
     
     display.blit(player_image, (player_rect.x-scroll[0], player_rect.y-scroll[1]))
 
