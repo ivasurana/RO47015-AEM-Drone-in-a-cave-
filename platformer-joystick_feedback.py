@@ -7,6 +7,7 @@ clock = pygame.time.Clock() # set up the clock
 from pygame.locals import * # import pygame modules
 import time
 import zmq
+import pandas as pd
 
 pygame.joystick.init()
 
@@ -17,6 +18,8 @@ for i in range(joystick_count):
 
 name = joystick.get_name()
 
+force_feedback = True
+
 context = zmq.Context()
 socket = context.socket(zmq.REP)
 socket.bind("tcp://*:5555")
@@ -25,7 +28,7 @@ socket.bind("tcp://*:5555")
 run=True
 
 directory_time = Path.cwd() /'Data_Time'
-user_input=input("What's your name?:")
+user_input=input("What's your name and trialnumber?:")
 filepath_time = directory_time / user_input
 
 # directory_collision="/home/isurana/Desktop/Robotics/Quarter-4/AEM/My_version/v1/Data_Collision/"
@@ -152,6 +155,10 @@ x_joystick=0
 y_joystick=0
 counter=0
 
+timer=0
+
+df1 = df = pd.DataFrame({'time':[0], 'collisions':[0],'collision_type':[0], 'x_joystick':[0], 'y_joystick':[0]})
+
 while run: # game loop
 
         
@@ -193,7 +200,7 @@ while run: # game loop
     np.save(pathlib.Path(filepath_time),time_list) # save
     
     player_movement = [0, 0]
-    player_movement[0] += x_joystick*10
+    player_movement[0] += x_joystick*5
     player_movement[1] += y_joystick*10
     player_y_momentum += 0
     # if player_y_momentum > 3:
@@ -206,28 +213,54 @@ while run: # game loop
     #print(player_rect)
     print(collisions)
 
-        
+    ################################# collisions
     if collisions['bottom']:
         counter=0
+        collide=1
         player_y_momentum=-0.5
-        num=str(99270)
-        socket.send(bytes(str(num), 'utf8'))
-    
-       
-            
+        if force_feedback:
+            message = socket.recv()
+            num = 99180
+            socket.send(bytes(str(num), 'utf8'))
     elif collisions['top']:
         counter=0
+        collide = 1
         player_y_momentum=1
-        num=str(99090)
-        socket.send(bytes(str(num), 'utf8'))
+        if force_feedback:
+            num = 99000
+            message = socket.recv()
+            socket.send(bytes(str(num), 'utf8'))
+    elif collisions['left']:
+        counter = 0
+        collide = 1
+        player_y_momentum = 1
+        if force_feedback:
+            num = 99270
+            message = socket.recv()
+            socket.send(bytes(str(num), 'utf8'))
+    elif collisions['right']:
+        counter = 0
+        collide = 1
+        player_y_momentum = 1
+        if force_feedback:
+            num = 99090
+            message = socket.recv()
+            socket.send(bytes(str(num), 'utf8'))
         
     else:
         counter+=1
-        if counter>40:
-            num=str(00000)
-            socket.send(bytes(str(num), 'utf8'))
-        
+        collide=0
+        if counter>5:
+            if force_feedback:
+                num= 10000
+                message = socket.recv()
+                socket.send(bytes(str(num), 'utf8'))
 
+    df2 = pd.DataFrame({'time': [timer], 'collisions': [collide],'collision_type': [collisions], 'x_joystick': [x_joystick], 'y_joystick': [y_joystick]})
+
+    frames = [df1, df2]
+    df1 = pd.concat(frames)
+    timer+=1
         
     if game_active:
         score+=0.024
@@ -259,3 +292,8 @@ while run: # game loop
     screen.blit(surf, (0, 0))
     pygame.display.update() # update display
     clock.tick(80) # maintain 90 fps
+if force_feedback:
+    csv_name_string = 'results/results_of_{}_with_haptic_.csv'.format(user_input)
+else:
+    csv_name_string = 'results/results_of_{}_without_haptic_.csv'.format(user_input)
+df1.to_csv(csv_name_string)
