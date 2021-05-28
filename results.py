@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-dataname1 = 'results/results_of_emiliotest1_with_haptic_.csv'
-dataname2 = 'results/results_of_emiliotest2_with_haptic_.csv'
-dataname3 = 'results/results_of_erik3_with_haptic_.csv'
-dataname4 = 'results/results_of_erik4_with_haptic_.csv'
+dataname1 = 'results/pilot results/results_of_emiliotest1_with_haptic_.csv'
+dataname2 = 'results/pilot results/results_of_emiliotest2_with_haptic_.csv'
+dataname3 = 'results/pilot results/results_of_erik3_with_haptic_.csv'
+dataname4 = 'results/pilot results/results_of_erik4_with_haptic_.csv'
 
 # dataname3 = 'results/results_of_Gee_without_haptic_28-Mar-2021_18:22:38.csv'
 #

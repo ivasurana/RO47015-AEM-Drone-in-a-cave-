@@ -27,7 +27,7 @@ socket = context.socket(zmq.REP)
 socket.bind("tcp://*:5555")
 
 ##Gamevariables
-run=True
+run =True
 
 directory_time = Path.cwd() /'Data_Time'
 user_input=input("What's your name and trialnumber?:")
