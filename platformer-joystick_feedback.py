@@ -1,3 +1,5 @@
+import math
+
 import pygame, sys,os,random,csv # import pygame and sys
 import numpy as np
 import pathlib
@@ -25,7 +27,7 @@ socket = context.socket(zmq.REP)
 socket.bind("tcp://*:5555")
 
 ##Gamevariables
-run=True
+run =True
 
 directory_time = Path.cwd() /'Data_Time'
 user_input=input("What's your name and trialnumber?:")
@@ -58,7 +60,7 @@ def collision_test(rect, tiles):
         if rect.colliderect(tile):
             hit_list.append(tile)
     
-            print(hit_list)
+            #print(hit_list)
     return hit_list
 
 
@@ -99,6 +101,17 @@ def score_display(game_state):
         # print("Score",score)
         time_list.append(score)
         # print(time_list)
+
+def force(x,y):
+    y_force = dfforce.iat[y,x]
+    x_force = dfforce2.iat[y,x]
+    gain = 2
+    y_force = round(np.clip(y_force*99*gain,-99,99))
+    y_force = y_force*1000
+    return y_force
+
+dfforce = pd.read_csv('ytest.csv')  # load force files
+dfforce2 = pd.read_csv('xtest.csv')
 
 
 pygame.init() # initiate pygame
@@ -210,51 +223,40 @@ while run: # game loop
 
 
     player_rect, collisions = move(player_rect, player_movement, tile_rects)
-    #print(player_rect)
-    print(collisions)
+    if player_rect[0] >= 6040:
+        run = False
 
+    F_y = force(player_rect[0],player_rect[1])
+    if F_y <= 0:
+        F_y = np.abs(F_y)
+    else:
+        F_y = F_y+180
+    if force_feedback:
+        message = socket.recv()
+        socket.send(bytes(str(F_y), 'utf8'))
+
+    print(player_rect)
     ################################# collisions
     if collisions['bottom']:
         counter=0
         collide=1
         player_y_momentum=-0.5
-        if force_feedback:
-            message = socket.recv()
-            num = 99180
-            socket.send(bytes(str(num), 'utf8'))
     elif collisions['top']:
         counter=0
         collide = 1
         player_y_momentum=1
-        if force_feedback:
-            num = 99000
-            message = socket.recv()
-            socket.send(bytes(str(num), 'utf8'))
     elif collisions['left']:
         counter = 0
         collide = 1
         player_y_momentum = 1
-        if force_feedback:
-            num = 99270
-            message = socket.recv()
-            socket.send(bytes(str(num), 'utf8'))
     elif collisions['right']:
         counter = 0
         collide = 1
         player_y_momentum = 1
-        if force_feedback:
-            num = 99090
-            message = socket.recv()
-            socket.send(bytes(str(num), 'utf8'))
-        
     else:
         counter+=1
         collide=0
-        if counter>5:
-            if force_feedback:
-                num= 10000
-                message = socket.recv()
-                socket.send(bytes(str(num), 'utf8'))
+
 
     df2 = pd.DataFrame({'time': [timer], 'collisions': [collide],'collision_type': [collisions], 'x_joystick': [x_joystick], 'y_joystick': [y_joystick]})
 
@@ -284,14 +286,15 @@ while run: # game loop
             if event.key==K_ESCAPE:
                 run=False
 
-            
-          
-            
+
+
+
 
     surf = pygame.transform.scale(display, WINDOW_SIZE)
     screen.blit(surf, (0, 0))
     pygame.display.update() # update display
     clock.tick(80) # maintain 90 fps
+
 if force_feedback:
     csv_name_string = 'results/results_of_{}_with_haptic_.csv'.format(user_input)
 else:
