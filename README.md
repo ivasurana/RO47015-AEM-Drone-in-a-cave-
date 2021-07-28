@@ -13,4 +13,4 @@ run:
 ./force_joystick /dev/input/by-id/usb-*event-joystick
 ```
 # Procedure
-first start the C program. It waits for the python file to start. for smooth control send high frequency commands. (10hz+)
+First start the C program. It waits for the python file to start. For smooth control send high frequency commands. (10hz+)
